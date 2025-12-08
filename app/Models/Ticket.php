@@ -9,22 +9,42 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Ticket extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory, InteractsWithMedia;
+
     protected $fillable = [
         'subject',
         'text',
         'status',
         'manager_id',
         'customer_id'
-    ]; 
+    ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
+    
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('ticket_files')
+            ->useDisk('public')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+            ->withResponsiveImages();
+    }
+
+    public function scopeCreatedInPeriod($query, $period)
+    {
+        $now = now();
+        return match ($period) {
+            'day' => $query->whereDate('created_at', $now->toDateString()),
+            'week' => $query->whereBetween('created_at', [$now->startOfWeek(), $now->endOfWeek()]),
+            'month' => $query->whereBetween('created_at', [$now->startOfMonth(), $now->endOfMonth()]),
+            default => $query,
+        };
     }
 }

@@ -17,7 +17,7 @@ class TicketSeeder extends Seeder
         $manager = User::factory()->create();
         $manager->assignRole('manager');
         $customers = Customer::factory()->count(50)->create();
-        Ticket::factory()->count(100)->make()->each(function ($ticket) use ($manager, $customers) {
+        Ticket::factory()->count(20)->make()->each(function ($ticket) use ($manager, $customers) {
             $ticket->manager_id = $manager->id;
             $ticket->customer_id = $customers->random()->id;
             $ticket->save();
