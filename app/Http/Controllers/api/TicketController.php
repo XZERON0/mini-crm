@@ -11,7 +11,7 @@ use App\Services\TicketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class TicketController extends Controller
 {
     public function __construct(protected TicketService $ticketService)
@@ -19,6 +19,13 @@ class TicketController extends Controller
     }
     public function store(StoreTicketRequest $request): JsonResponse
     {
+        // Отладка
+        Log::info('Store ticket request:', [
+            'has_files' => $request->hasFile('files'),
+            'files_count' => $request->hasFile('files') ? count($request->file('files')) : 0,
+            'all_files' => $request->file('files'),
+            'all_data' => $request->all(),
+        ]);
         if (
             !$this->ticketService->canCreateTicket(
                 $request->input('customer.email'),

@@ -23,7 +23,7 @@ class Ticket extends Model implements HasMedia
     {
         return $this->belongsTo(Customer::class);
     }
-    
+
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
@@ -33,7 +33,6 @@ class Ticket extends Model implements HasMedia
     {
         $this->addMediaCollection('ticket_files')
             ->useDisk('public')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
             ->withResponsiveImages();
     }
 

@@ -32,7 +32,7 @@ class TicketController extends Controller
     {
         $this->checkAdminAccess();
         
-        $ticket->load(['customer', 'manager']);
+        $ticket->load(['customer', 'manager', 'media']);
         return view('admin.tickets.show', compact('ticket'));
     }
     public function updateStatus(Request $request, Ticket $ticket)

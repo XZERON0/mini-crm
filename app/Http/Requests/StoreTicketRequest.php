@@ -15,7 +15,7 @@ class StoreTicketRequest extends FormRequest
     {
         return [
             'customer.name' => 'required|string|max:255',
-            'customer.phone' => 'required|string|regex:/^\+7\d{10}$/', 
+            'customer.phone' => 'required|string|regex:/^\+7\d{10}$/',
             'customer.email' => 'required|email|max:255',
             'subject' => 'required|string|max:500',
             'text' => 'required|string',
