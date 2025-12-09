@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест виджета в iframe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        iframe {
+            border: 2px dashed #ccc;
+            width: 500px;
+            height: 600px;
+            resize: both;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тестирование виджета в iframe</h1>
+    <p>Ниже загружен виджет через iframe:</p>
+    
+    <iframe src="http://127.0.0.1:8000/widget" 
+            title="Виджет обратной связи"
+            allow="autoplay; fullscreen">
+    </iframe>
+    
+    <p>Попробуй заполнить форму и отправить — должно работать через AJAX.</p>
+</body>
+</html>
