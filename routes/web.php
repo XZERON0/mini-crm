@@ -64,3 +64,4 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/tickets/{ticket}/status', [AdminTicketController::class, 'updateStatus'])
         ->name('admin.tickets.updateStatus');
 });
+Route::get('/download/{mediaId}', [AdminTicketController::class, 'download'])->name('file.download');

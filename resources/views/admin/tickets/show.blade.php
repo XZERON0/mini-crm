@@ -159,7 +159,7 @@
                         </div>
                     </div>
                     
-                    <a href="{{ Storage::url($file->getPathRelativeToRoot()) }}" 
+                    <a href="{{ route('file.download', ['mediaId'=>$file->id]) }}" 
                        target="_blank"
                        class="text-blue-600 hover:text-blue-800 font-medium text-sm whitespace-nowrap">
                         Скачать

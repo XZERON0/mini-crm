@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: Feedback Widget API
+  description: API для виджета обратной связи
+  version: 1.0.0
+
+paths:
+  /api/tickets:
+    post:
+      summary: Создание новой заявки
+      tags:
+        - Tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRequest'
+      responses:
+        '201':
+          description: Заявка создана успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Заявка успешно создана."
+        '429':
+          description: Превышен лимит заявок
+        '422':
+          description: Ошибка валидации
+
+components:
+  schemas:
+    TicketRequest:
+      type: object
+      required:
+        - name
+        - email
+        - message
+      properties:
+        name:
+          type: string
+          example: "Иван Иванов"
+        email:
+          type: string
+          format: email
+          example: "ivan@example.com"
+        phone:
+          type: string
+          example: "+79991234567"
+        message:
+          type: string
+          example: "Текст сообщения"

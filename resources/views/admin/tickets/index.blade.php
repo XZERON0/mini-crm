@@ -183,11 +183,9 @@
 
 @section('scripts')
 <script>
-    // Простой Alpine.js компонент для фильтров
     document.addEventListener('alpine:init', () => {
         Alpine.data('tickets', () => ({
             init() {
-                // Можно добавить дополнительную логику
             }
         }));
     });
