@@ -1,24 +1,59 @@
 openapi: 3.0.0
 info:
-  title: Feedback Widget API
-  description: API для виджета обратной связи
+  title: Ticket API
   version: 1.0.0
-
+  description: API для создания заявок (тикеты) и получения статистики.
+servers:
+  - url: /api
+    description: Основной API сервер
 paths:
-  /api/tickets:
+  /tickets:
     post:
-      summary: Создание новой заявки
+      summary: Создать новую заявку
+      operationId: createTicket
       tags:
         - Tickets
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TicketRequest'
+              type: object
+              properties:
+                subject:
+                  type: string
+                  description: Тема заявки.
+                  example: Проблема с оплатой
+                text:
+                  type: string
+                  description: Полное описание проблемы.
+                  example: Не могу завершить оплату через Visa.
+                customer[name]:
+                  type: string
+                  description: Имя клиента.
+                  example: Иван
+                customer[email]:
+                  type: string
+                  format: email
+                  description: Email клиента.
+                  example: ivan@example.com
+                customer[phone]:
+                  type: string
+                  description: Телефон клиента.
+                  example: +79001234567
+                files[]:
+                  type: array
+                  description: Массив файлов для прикрепления к заявке (опционально).
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files[]:
+                style: form
+                explode: true
       responses:
         '201':
-          description: Заявка создана успешно
+          description: Заявка успешно создана.
           content:
             application/json:
               schema:
@@ -26,31 +61,145 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Заявка успешно создана."
-        '429':
-          description: Превышен лимит заявок
+                    example: Заявка успешно создана.
+                  data:
+                    $ref: '#/components/schemas/Ticket'
         '422':
-          description: Ошибка валидации
+          description: Ошибка валидации или ограничение на создание заявки (одна заявка в сутки с email/phone).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Вы можете отправить только одну заявку в сутки с одного email или телефона.
+                  errors:
+                    type: object
+        '500':
+          description: Внутренняя ошибка сервера.
+
+  /tickets/statistics:
+    get:
+      summary: Получить статистику по заявкам
+      operationId: getTicketStatistics
+      tags:
+        - Tickets
+      parameters:
+        - name: period
+          in: query
+          description: Период для статистики (например, day, week, month). По умолчанию 'day'.
+          required: false
+          schema:
+            type: string
+            default: day
+            enum:
+              - day
+              - week
+              - month
+              - year
+      responses:
+        '200':
+          description: Успешный ответ со статистикой.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 50
+                    description: Общее количество заявок за период.
+                  new:
+                    type: integer
+                    example: 10
+                    description: Количество новых заявок.
+                  in_progress:
+                    type: integer
+                    example: 30
+                    description: Количество заявок "В работе".
+                  processed:
+                    type: integer
+                    example: 10
+                    description: Количество обработанных заявок.
+                  period:
+                    type: string
+                    example: day
+                    description: Фактический период, за который была получена статистика.
+        '400':
+          description: Неверный период.
+        '500':
+          description: Внутренняя ошибка сервера.
 
 components:
   schemas:
-    TicketRequest:
+    Customer:
       type: object
-      required:
-        - name
-        - email
-        - message
       properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
         name:
           type: string
-          example: "Иван Иванов"
+          example: Иван
         email:
           type: string
           format: email
-          example: "ivan@example.com"
+          example: ivan@example.com
         phone:
           type: string
-          example: "+79991234567"
-        message:
+          example: +79001234567
+
+    Media:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 5
+        file_name:
           type: string
-          example: "Текст сообщения"
+          example: document.pdf
+        mime_type:
+          type: string
+          example: application/pdf
+        url:
+          type: string
+          format: url
+          description: URL для скачивания файла (зависит от настроек приложения).
+          example: /download/5
+
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 101
+        subject:
+          type: string
+          example: Проблема с оплатой
+        text:
+          type: string
+          example: Не могу завершить оплату через Visa.
+        status:
+          type: string
+          enum:
+            - Новый
+            - В работе
+            - Обработан
+          example: Новый
+        customer_id:
+          type: integer
+          readOnly: true
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+        customer:
+          $ref: '#/components/schemas/Customer'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
