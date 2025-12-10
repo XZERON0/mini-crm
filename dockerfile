@@ -48,11 +48,13 @@ RUN { \
     echo 'max_execution_time=300'; \
     echo 'date.timezone=UTC'; \
     } > /usr/local/etc/php/conf.d/custom.ini
-
+RUN chmod 777 /tmp
 WORKDIR /var/www
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY --from=composer /app/vendor/ ./vendor/
 COPY --from=front /app/public/build/ ./public/build/
 COPY . .
+RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
