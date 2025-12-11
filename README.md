@@ -64,7 +64,7 @@ php artisan serve
 ```bash
 composer install
 npm i # ну или так же install
-npm run dev
+npm run build
 ```
 Тут достаточно одной команды как:
 ```bash
